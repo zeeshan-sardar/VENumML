@@ -109,16 +109,18 @@ def FFT(ctx,x_unpadded, pad_data = False, window_data = False):
         return [(x_unpadded[0], ctx.encrypt(0))]
     else:
         if window_data is True:
-            x_unpadded = hann_window(ctx,x_unpadded)
+            #useful in frequency analysis because it reduces the effect of sharp transitions in the time-domain signal.
+            # it preserves the freq. as fft by default considers the signal repeats perfectly which is not the case in real-life.
+            x_unpadded = hann_window(ctx,x_unpadded) 
         else:
             pass
         if pad_data:
-            padded_length = next_power_of_2(N)  
-            x = pad_ciphervec(ctx, x_unpadded, padded_length)
+            padded_length = next_power_of_2(N) # to match the input size to the power of two for efficient FFT implementation
+            x = pad_ciphervec(ctx, x_unpadded, padded_length) # adds the padding to make the len of n to power of 2
             N = padded_length
         else:
             x = x_unpadded
-        X_even = FFT(ctx, x[::2])
+        X_even = FFT(ctx, x[::2]) # divides the input into even and odd indexed values for efficient computation
         X_odd = FFT(ctx, x[1::2])
         factor = generate_twiddle_factors(N)
         factor = [(ctx.encrypt(c[0]),ctx.encrypt(c[1])) for c in factor]
