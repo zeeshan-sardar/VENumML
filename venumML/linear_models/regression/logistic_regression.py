@@ -171,8 +171,9 @@ class EncryptedLogisticRegression:
 
         self._encrypted_intercept_ = ctx.encrypt(self._intercept_)
         self._encrypted_coef_ = [ctx.encrypt(v) for v in self._coef_]
-
-    def predict(self, encrypted_X, ctx):
+#TODO: ctx can be removed or we can change the predict function to do 
+# predictions on plaintext if ctx is None and on encrypted text if ctx id provided and return the results respectively.
+    def predict(self, encrypted_X, ctx): 
         """
         Predict outcomes using encrypted data.
 

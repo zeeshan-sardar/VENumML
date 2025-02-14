@@ -421,7 +421,7 @@ class TransformerModule:
         self._d_model = d_model
         self._MHA = MultiHeadAttention(num_heads=num_heads)
         for i in range(num_heads):
-            self._MHA.set_head_weights(i,mha_weights)
+            self._MHA.set_head_weights(i,mha_weights) # assigns weights to attention heads
         self._MHA.set_output_weights(mha_output_weights,mha_output_bias)
         
         self._positional_encoding = positional_encoding(max_seq_len, d_model)  # Assuming positional_encoding is defined
@@ -431,7 +431,7 @@ class TransformerModule:
         self._p_ffn = PositionwiseFeedForwardNetwork(d_model,d_ff)
         self._p_ffn.set_weights(pffnw1,pffnb1,pffnw2,pffnb2)
 
-
+        # Define output classification layer
         self._output_w = encrypted_state_dict['output_linear.weight'] 
         self._output_b = encrypted_state_dict['output_linear.bias'] 
 
@@ -477,6 +477,6 @@ class TransformerModule:
 
        #    # # Pass through the final linear layer
        # #  # Apply the output linear layer
-        cls_output = ff_output[:, 0, :]
+        cls_output = ff_output[:, 0, :] # cls_output shape (bs, seq_len, d_model). First token is extracted as it can represent the entire sequence due to self attention heads.
         output = output_linear_layer(cls_output,self._output_w,self._output_b) 
         return output

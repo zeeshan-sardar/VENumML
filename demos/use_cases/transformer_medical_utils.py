@@ -78,6 +78,8 @@ def decrypt_array(encrypted_array):
     return np.array([element.decrypt() for element in encrypted_array])
 
 # Transformer Inference class
+# - loading model weights, encrypting them, 
+# - creating text seq to batch indices, creating a batch of embeddings of size (bs, seq_len, d_model) and encrypting them
 class TransformerInference:
     def __init__(self, model_weights_path, tokenizer, encryption_context, max_seq_len, d_model, num_heads, d_ff, vocab_size, class_size):
         self.ctx = encryption_context
@@ -95,8 +97,8 @@ class TransformerInference:
 
     def predict(self, texts,encrypt=True):
         if encrypt == True: 
-            batch_indices = texts_to_batch_indices(texts, self.tokenizer, self.max_seq_len)
-            embeddings = Embeddings(self.state_dict['embeddings.weight'].numpy())
+            batch_indices = texts_to_batch_indices(texts, self.tokenizer, self.max_seq_len) # Converting the entire text to the batch of tokens indices
+            embeddings = Embeddings(self.state_dict['embeddings.weight'].numpy()) # Gives a batch of embeddings of size(bs, seq_len, d_model)
             embedding_output = embeddings.forward(batch_indices, len(texts), self.max_seq_len)
             embedding_output = encrypt_array(embedding_output, self.ctx)
         else:
