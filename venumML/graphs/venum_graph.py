@@ -158,7 +158,7 @@ class Graph:
         self._adjacency_matrix[from_index, to_index] = weight
         self._boolean_matrix[from_index, to_index] = ctx.encrypt(1)
 
-        if not self._directed:
+        if not self._directed: # Why mirror the edge?
             # For undirected graphs, mirror the edge
             self._adjacency_matrix[to_index, from_index] = weight
             self._boolean_matrix[to_index, from_index] = ctx.encrypt(1)
@@ -313,7 +313,7 @@ def encrypt_networkx(ctx, nx_graph,use_hashing=True):
     # Add nodes to the custom graph
     nodes = list(nx_graph.nodes())
     for node in nodes:
-        custom_graph.add_node(ctx, node)
+        custom_graph.add_node(ctx, node) #Adds a node to the graph after hashing and ensures the adjacency matrix is resized.
     
     # Add edges to the custom graph, using the weight attribute if available, otherwise defaulting to 1
     edges = list(nx_graph.edges(data=True))
@@ -381,7 +381,7 @@ def df_to_encrypted_graph(ctx, df, from_col, to_col, weight_col = None, use_hash
             weight = 1
         else:
             weight = row[weight_col]
-        custom_graph.add_edge(ctx, from_node, to_node, weight)
+        custom_graph.add_edge(ctx, from_node, to_node, weight) #Adds a weighted edge value between two nodes in the adjacency matrix
     
     return custom_graph
 

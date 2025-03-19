@@ -66,13 +66,15 @@ def phineus_predict(ctx, data, forecast_periods=30, frequency='D', window_size=3
     trend_model.encrypted_fit(ctx, t_enc, y, lr=0.3, epochs=10)
     trend = trend_model.predict(t_enc.reshape(-1, 1), ctx)
 
+    #Trend: A long-term increase or decrease in the data.
+    #Seasonality: Repeating patterns at regular intervals (daily, weekly, monthly, etc.).
     # # Detrend the data
-    detrended_y = y - trend  
+    detrended_y = y - trend  # required to extract seasonality otherwise trend would dominate as low-freq. comp. in freq. sepectrum
     # # Seasonal modeling
-    fft_values = phineus_FFT.FFT(ctx, detrended_y, pad_data=True, window_data=False)
+    fft_values = phineus_FFT.FFT(ctx, detrended_y, pad_data=True, window_data=False) #extracts frequency components
     sr = len(detrended_y)
-    frequencies = rfftfreq(len(fft_values), 1/sr)
-    magnitudes = np.asarray([(real**2 + imag**2) for real, imag in fft_values])
+    frequencies = rfftfreq(len(fft_values), 1/sr) # Computes frequency spectrum
+    magnitudes = np.asarray([(real**2 + imag**2) for real, imag in fft_values]) # determines the importance of different frequencies.
     magnitudes = magnitudes[:len(frequencies)]
 
  
